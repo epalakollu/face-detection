@@ -21,8 +21,8 @@ cap = cv2.VideoCapture(0)
 
 #traindata.trainGenderClassficationData('images/male/*.*',1,'images/female/*.*',2,50,50)
 
-faceRecognizer = cv2.face.createLBPHFaceRecognizer()
-faceRecognizer.load("face_recognizer_gender.yml")
+faceRecognizer = cv2.face.LBPHFaceRecognizer_create()
+faceRecognizer.read("face_recognizer_gender.yml")
 
 gender_classifier = {1:'Male',2:'Female'}
 
@@ -52,8 +52,10 @@ while(True):
 
   face_cascade = cv2.CascadeClassifier(path)
 
+  
   faces = face_cascade.detectMultiScale(gray, scaleFactor=1.30, minNeighbors=5, minSize=(40,40))
-  #print('faces',faces)
+ 
+   #print('faces',faces)
 
   maleFacesCount = 0
   femaleFacesCount = 0
@@ -76,11 +78,11 @@ while(True):
       if faceCounterNow > faceCounter:
         faceCounter = faceCounterNow
         
-        if maleFacesCount >  totalMaleFaces:
-          totalMaleFaces = maleFacesCount
+      if maleFacesCount >  totalMaleFaces:
+        totalMaleFaces = maleFacesCount
 
-        if femaleFacesCount > totalFemaleFaces:
-          totalFemaleFaces = femaleFacesCount
+      if femaleFacesCount > totalFemaleFaces:
+        totalFemaleFaces = femaleFacesCount
 
       minuteFaceTime =  round(runningFaceTime.total_seconds())
       recordStatistics(faceTime, minuteFaceTime, totalMaleFaces,totalFemaleFaces)
@@ -97,11 +99,17 @@ while(True):
     crop_img = cv2.cvtColor(crop_img,cv2.COLOR_BGR2GRAY)
 
     cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2)
+    if cv2.__version__ >= "3.1.0":
+      result = cv2.face.StandardCollector_create()
+      faceRecognizer.predict_collect(crop_img,result)
+      predictedLabel = result.getMinLabel()
+      conf = result.getMinDist()
+    else:
+      result = cv2.face.MinDistancePredictCollector()
+      faceRecognizer.predict(crop_img,result,0)
+      predictedLabel = result.getLabel()
+      conf = result.getDist()
 
-    result = cv2.face.MinDistancePredictCollector()
-    faceRecognizer.predict(crop_img,result,0)
-    predictedLabel = result.getLabel()
-    conf = result.getDist()
 
     if predictedLabel==1:
       maleFacesCount +=1
