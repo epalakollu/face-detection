@@ -1,10 +1,15 @@
+
 import numpy as np
 import cv2
-
+import RPi.GPIO as GPIO
+import time
 cap = cv2.VideoCapture(0)
 
 eye_path = "haarcascade_eye.xml"
-
+#light LED
+GPIO.setmode(GPIO.BCM) 
+GPIO.setwarnings(False)
+GPIO.setup(18,GPIO.OUT)
 
 while(True):
   ret, img = cap.read()
@@ -18,11 +23,17 @@ while(True):
 
   faces = face_cascade.detectMultiScale(gray, scaleFactor=1.30, minNeighbors=5, minSize=(30,30))
   print(faces)
+  if len(faces)>0:
+    print("LED on")
+    GPIO.output(18,GPIO.HIGH)
+  else:
+    GPIO.output(18,GPIO.LOW)
+
 
   for (x, y, w, h) in faces:
     cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2)
+    ''' eye_cascade = cv2.CascadeClassifier(eye_path)
 
-    eye_cascade = cv2.CascadeClassifier(eye_path)
     eyes = eye_cascade.detectMultiScale(gray, scaleFactor=1.02,minNeighbors=20,minSize=(10,10))
     print(len(eyes))
 
@@ -31,8 +42,8 @@ while(True):
       yc = (y + y+h)/2
       radius = w/2
       cv2.circle(img, (int(xc),int(yc)), int(radius), (255,0,0), 2)
-
-    cv2.imshow("Image",img)
+     '''
+  cv2.imshow("Image",img)
 
 
  # cv2.circle(img, point, radius, color, line_width)
@@ -40,7 +51,8 @@ while(True):
 
   ch = cv2.waitKey(30)
   if ch & 0xFF == ord('q'):
-    break
+   GPIO.output(18,GPIO.LOW)
+   break
 
 cap.release()
 cv2.destroyAllWindows()
