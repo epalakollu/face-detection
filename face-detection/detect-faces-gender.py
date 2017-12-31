@@ -20,10 +20,10 @@ if utils.getEnvironmentValueByKey('TRAIN_GENDER_CLASSFICATION_DATA')=='TRUE':
 #handling multiple versions of OpenCV
 if cv2.__version__ > "3.1.0":
   faceRecognizer = cv2.face.LBPHFaceRecognizer_create()
-  faceRecognizer.read("face_recognizer_gender.yml")
+  faceRecognizer.read("data/face_recognizer_gender.yml")
 else:
   faceRecognizer = cv2.face.createLBPHFaceRecognizer()
-  faceRecognizer.load("face_recognizer_gender.yml")
+  faceRecognizer.load("data/face_recognizer_gender.yml")
   
 
 #initialize variables
@@ -52,7 +52,7 @@ while(True):
   gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
   #use opencv default haar cascde file for face detection
-  path = "haarcascade_frontalface_default.xml"
+  path = "data/haarcascade_frontalface_default.xml"
 
   face_cascade = cv2.CascadeClassifier(path)  
   faces = face_cascade.detectMultiScale(gray, scaleFactor=1.30, minNeighbors=5, minSize=(20,20))
