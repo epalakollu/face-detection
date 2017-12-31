@@ -21,8 +21,13 @@ cap = cv2.VideoCapture(0)
 
 #traindata.trainGenderClassficationData('images/male/*.*',1,'images/female/*.*',2,50,50)
 
-faceRecognizer = cv2.face.LBPHFaceRecognizer_create()
-faceRecognizer.read("face_recognizer_gender.yml")
+if cv2.__version__ > "3.1.0":
+  faceRecognizer = cv2.face.LBPHFaceRecognizer_create()
+  faceRecognizer.read("face_recognizer_gender.yml")
+else:
+  faceRecognizer = cv2.face.createLBPHFaceRecognizer()
+  faceRecognizer.load("face_recognizer_gender.yml")
+  
 
 gender_classifier = {1:'Male',2:'Female'}
 
@@ -44,8 +49,8 @@ totalFemaleFaces = 0
 while(True):
   ret, img = cap.read()
 
-  img = cv2.resize(img, (0,0), fx=0.5,fy=0.5)
-
+  #img = cv2.resize(img, (0,0), fx=0.5,fy=0.5)
+  img = cv2.resize(img, (600,400))
   gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
   path = "haarcascade_frontalface_default.xml"
@@ -99,7 +104,7 @@ while(True):
     crop_img = cv2.cvtColor(crop_img,cv2.COLOR_BGR2GRAY)
 
     cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2)
-    if cv2.__version__ >= "3.1.0":
+    if cv2.__version__ > "3.1.0":
       result = cv2.face.StandardCollector_create()
       faceRecognizer.predict_collect(crop_img,result)
       predictedLabel = result.getMinLabel()
