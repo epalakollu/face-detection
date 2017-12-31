@@ -4,7 +4,7 @@ from traindata import traindata
 from datetime import datetime
 
 #Uncomment to enable lights on PI
-#import showLightsOnPI as showPILights
+import showLightsOnPI as showPILights
 
 
 def recordStatistics(facetime, total, maleFacesCount,femaleFacesCount):
@@ -132,7 +132,7 @@ while(True):
     cv2.imshow("Image",img)
 
   #enable LED lights on PI
-  #showPILights.showGenderLights(maleFacesCount,femaleFacesCount)
+  showPILights.showGenderLights(maleFacesCount,femaleFacesCount)
 
   #if len(faces) < 1 and facesFound=='true' and round((datetime.now()-runningFaceTime).total_seconds())>0:
   if len(faces) < 1 and facesFound=='true':
