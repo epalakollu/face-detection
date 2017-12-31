@@ -3,6 +3,9 @@ import cv2
 from traindata import traindata
 from datetime import datetime
 
+#Uncomment to enable lights on PI
+#import showLightsOnPI as showPILights
+
 
 def recordStatistics(facetime, total, maleFacesCount,femaleFacesCount):
   statsFile = open("analytics.txt", "a")
@@ -126,6 +129,10 @@ while(True):
 
     cv2.putText(img, gender_classifier.get(predictedLabel), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0))
     cv2.imshow('cropeed',crop_img)
+    cv2.imshow("Image",img)
+
+  #enable LED lights on PI
+  #showPILights.showGenderLights(maleFacesCount,femaleFacesCount)
 
   #if len(faces) < 1 and facesFound=='true' and round((datetime.now()-runningFaceTime).total_seconds())>0:
   if len(faces) < 1 and facesFound=='true':

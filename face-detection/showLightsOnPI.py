@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 
-def showGenderLights(maleFlag,femaleFlag)
+def showGenderLights(maleFlag,femaleFlag):
   
   GPIO.setmode(GPIO.BCM) 
   GPIO.setwarnings(False)
