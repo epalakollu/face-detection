@@ -19,7 +19,7 @@ cap = cv2.VideoCapture(0)
 
 #recordStatistics(datetime.now(),0,5,3)
 
-traindata.trainGenderClassficationData('images/male/*.*',1,'images/female/*.*',2,50,50)
+#traindata.trainGenderClassficationData('images/male/*.*',1,'images/female/*.*',2,50,50)
 
 faceRecognizer = cv2.face.createLBPHFaceRecognizer()
 faceRecognizer.load("face_recognizer_gender.yml")
