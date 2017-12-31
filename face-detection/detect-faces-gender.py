@@ -74,7 +74,7 @@ while(True):
       faceCounter = len(faces)   
     elif datetime.now().minute>minute:
       minuteFaceTime =  (datetime.now() - faceTime) 
-      print('Face time spent in last 1 minute: ', minuteFaceTime)
+      print('Face time spent in last 1 minute: ', runningFaceTime)
       minute = datetime.now().minute
       faceCounterNow = len(faces)
       
@@ -136,6 +136,10 @@ while(True):
     newTime = datetime.now()
     total =  total + (newTime - faceTime)
     runningFaceTime = runningFaceTime + (newTime - faceTime)
+
+    if datetime.now().minute>minute:
+      utils.recordStatistics(faceTime, round(runningFaceTime.total_seconds()), totalMaleFaces,totalFemaleFaces)
+
     print('running counter',total)
   elif len(faces)>0:
     if maleFacesCount >  totalMaleFaces:
@@ -152,6 +156,9 @@ while(True):
  
     endTime = datetime.now()   
     #if len(faces) > 0 and facesFound=='true':
+    if faceTime==0:
+      faceTime = datetime.now()
+      
     total =  total + (endTime - faceTime)
     runningFaceTime = runningFaceTime + (endTime - faceTime)
     minuteFaceTime =  runningFaceTime.total_seconds()
