@@ -2,28 +2,22 @@ import numpy as np
 import cv2
 from traindata import traindata
 from datetime import datetime
+import os
+import utils as utils
+
+
 
 #Uncomment to enable lights on PI
-import showLightsOnPI as showPILights
+if utils.getEnvironmentValueByKey('ENVIRONMENT_TYPE')=='RASPBERRYPI':
+  import showLightsOnPI as showPILights
 
 
-def recordStatistics(facetime, total, maleFacesCount,femaleFacesCount):
-  statsFile = open("analytics.txt", "a")
-  string = str(facetime.date())+' '+str(facetime.hour)+':'+str(facetime.minute)+','+str(total)+','+str(maleFacesCount)+','+str(femaleFacesCount)
-
-  statsFile.write(string+'\n')
-  statsFile.close()
+#train data if flag enabled or else load file from trained file
+if utils.getEnvironmentValueByKey('TRAIN_GENDER_CLASSFICATION_DATA')=='TRUE':
+  traindata.trainGenderClassficationData('images/male/*.*',1,'images/female/*.*',2,50,50)
 
 
-
-
-cap = cv2.VideoCapture(0)
-
-
-#recordStatistics(datetime.now(),0,5,3)
-
-#traindata.trainGenderClassficationData('images/male/*.*',1,'images/female/*.*',2,50,50)
-
+#handling multiple versions of OpenCV
 if cv2.__version__ > "3.1.0":
   faceRecognizer = cv2.face.LBPHFaceRecognizer_create()
   faceRecognizer.read("face_recognizer_gender.yml")
@@ -32,14 +26,13 @@ else:
   faceRecognizer.load("face_recognizer_gender.yml")
   
 
+#initialize variables
 gender_classifier = {1:'Male',2:'Female'}
-
-counter = 0
-
 startTime = datetime.now()
 total = datetime.now()-startTime
 runningFaceTime = datetime.now()-startTime
 
+counter = 0
 facesFound = 'false'
 faceTime = 0
 minute = 0
@@ -48,22 +41,22 @@ totalMaleFaces = 0
 totalFemaleFaces = 0
 
 
+#Enable and capture video feed
+cap = cv2.VideoCapture(0)
 
 while(True):
   ret, img = cap.read()
 
   #img = cv2.resize(img, (0,0), fx=0.5,fy=0.5)
-  img = cv2.resize(img, (600,400))
+  img = cv2.resize(img, (640,360))
   gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
+  #use opencv default haar cascde file for face detection
   path = "haarcascade_frontalface_default.xml"
 
-  face_cascade = cv2.CascadeClassifier(path)
+  face_cascade = cv2.CascadeClassifier(path)  
+  faces = face_cascade.detectMultiScale(gray, scaleFactor=1.30, minNeighbors=5, minSize=(20,20))
 
-  
-  faces = face_cascade.detectMultiScale(gray, scaleFactor=1.30, minNeighbors=5, minSize=(40,40))
- 
-   #print('faces',faces)
 
   maleFacesCount = 0
   femaleFacesCount = 0
@@ -71,6 +64,8 @@ while(True):
 
   for (x, y, w, h) in faces:
 
+
+    #calculate face time
     if facesFound == 'false':
       faceTime = datetime.now()
       minute = faceTime.minute
@@ -83,30 +78,30 @@ while(True):
       minute = datetime.now().minute
       faceCounterNow = len(faces)
       
+      #ensure that face counter only updated if more faces come into frame than before
       if faceCounterNow > faceCounter:
         faceCounter = faceCounterNow
-        
+      #set total male faces
       if maleFacesCount >  totalMaleFaces:
         totalMaleFaces = maleFacesCount
-
+      #set total female faces
       if femaleFacesCount > totalFemaleFaces:
         totalFemaleFaces = femaleFacesCount
 
+      #calculate and record face time in analytics file
       minuteFaceTime =  round(runningFaceTime.total_seconds())
-      recordStatistics(faceTime, minuteFaceTime, totalMaleFaces,totalFemaleFaces)
+      utils.recordStatistics(faceTime, minuteFaceTime, totalMaleFaces,totalFemaleFaces)
       runningFaceTime = datetime.now()-datetime.now()
 
 
 
     crop_img = img[y:y+h, x:x+w]
-
-    #counter += 1
-    #cv2.imwrite("testdata/face"+str(counter)+'.jpeg',crop_img)
-
     crop_img = cv2.resize(crop_img, (50,50))
     crop_img = cv2.cvtColor(crop_img,cv2.COLOR_BGR2GRAY)
-
     cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2)
+    
+    #predict gender from faces found in frame
+    #compatibility with opencv version
     if cv2.__version__ > "3.1.0":
       result = cv2.face.StandardCollector_create()
       faceRecognizer.predict_collect(crop_img,result)
@@ -118,7 +113,7 @@ while(True):
       predictedLabel = result.getLabel()
       conf = result.getDist()
 
-
+    #increment
     if predictedLabel==1:
       maleFacesCount +=1
     elif predictedLabel==2:
@@ -132,7 +127,8 @@ while(True):
     cv2.imshow("Image",img)
 
   #enable LED lights on PI
-  showPILights.showGenderLights(maleFacesCount,femaleFacesCount)
+  if utils.getEnvironmentValueByKey('ENVIRONMENT_TYPE')=='RASPBERRYPI':
+    showPILights.showGenderLights(maleFacesCount,femaleFacesCount)
 
   #if len(faces) < 1 and facesFound=='true' and round((datetime.now()-runningFaceTime).total_seconds())>0:
   if len(faces) < 1 and facesFound=='true':
@@ -154,17 +150,14 @@ while(True):
  
   if ch & 0xFF == ord('q'):
  
-    endTime = datetime.now()
-    
+    endTime = datetime.now()   
     #if len(faces) > 0 and facesFound=='true':
     total =  total + (endTime - faceTime)
     runningFaceTime = runningFaceTime + (endTime - faceTime)
     minuteFaceTime =  runningFaceTime.total_seconds()
-    recordStatistics(faceTime, round(runningFaceTime.total_seconds()), totalMaleFaces,totalFemaleFaces)    
+    utils.recordStatistics(faceTime, round(runningFaceTime.total_seconds()), totalMaleFaces,totalFemaleFaces)    
     print('Total face time on camera: ',total)
     print('Total activity time: ', (endTime-startTime))
-
-
     break
 
 cap.release()
