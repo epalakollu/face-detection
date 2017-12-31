@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 from PIL import Image
 import glob
+from traindata import traindata
 
 
 eye_path = "haarcascade_eye.xml"
@@ -51,60 +52,86 @@ fisher_faces.train(image_list,labels)
 fisher_faces.save("trainedmodels.yml")
 '''
 
+#traindata.trainGenderClassficationData('images/male/*.*',1,'images/female/*.*',2,50,50)
+
 fisher_faces = cv2.face.createLBPHFaceRecognizer()
 fisher_faces.load('face_recognizer_gender.yml')
 
+image_formats = {'jpeg','jpg','png','JPG','JPEG','PNG'}
+path = '/Users/ekumar/Downloads/imdb_crop/94/*.*'
 
-img = cv2.imread("images/cmto.png",1)
+for filename in glob.glob(path):
 
-path = "haarcascade_frontalface_default.xml"
+    print(filename)
 
-face_cascade = cv2.CascadeClassifier(path)
-
-faces = face_cascade.detectMultiScale(img, scaleFactor=1.10, minNeighbors=5, minSize=(20,20))
-print('faces',faces)
-counter = 0
-for (x, y, w, h) in faces:
+    if filename.__contains__('.') and image_formats.__contains__(filename.split('.')[1]):
 
 
-    counter += 1
+        img = cv2.imread(filename,1)
 
-    crop_img = img[y:y+h, x:x+w]
+        print(img.shape)
 
-    crop_img = cv2.resize(crop_img, (40,40))
-    print('cropped image shape: ',crop_img.shape)
-    predictedLabel = -1
-    confidence = 0
+        if img.shape[0]>600:
+            img = cv2.resize(img,(600,600))
 
-    cv2.imwrite("face"+str(counter)+'.jpeg',crop_img)
+        path = "haarcascade_frontalface_default.xml"
 
-    cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2)
+        face_cascade = cv2.CascadeClassifier(path)
+
+        faces = face_cascade.detectMultiScale(img, scaleFactor=1.30, minNeighbors=5, minSize=(40,40))
+        print('faces',faces)
+        counter = 0
+        for (x, y, w, h) in faces:
+
+
+            counter += 1
+
+            crop_img = img[y:y+h, x:x+w]
+
+            
+            print('cropped image shape: ',crop_img.shape)
+            predictedLabel = -1
+            confidence = 0
+
+            
+
+     
+            
+            crop_img_bgr = cv2.cvtColor(crop_img,cv2.COLOR_BGR2GRAY)
+            crop_img_bgr = cv2.resize(crop_img_bgr, (50,50))
+
+            result = cv2.face.MinDistancePredictCollector()
+            fisher_faces.predict(crop_img_bgr,result,0)
+            predictedLabel = result.getLabel()
+            conf = result.getDist()
+
+
+
+            strList = filename.split('/')
+            strFileName = strList[len(strList)-1]
+            strFileNameList = strFileName.split('.')
+            strFileName = strFileNameList[0]+'_'+str(counter)+'.'+strFileNameList[1]
+            print(strFileName)
+
+            if predictedLabel==1:
+              strPredicted = 'Male'
+              cv2.imwrite("male/"+strFileName,crop_img)
+            elif predictedLabel==2:
+              strPredicted = 'Female'
+              cv2.imwrite("female/"+strFileName,crop_img)          
+            else:
+              strPredicted = 'Not Found'
+
+            print("{} identified with confidence {}".format(strPredicted, conf))
+
+            cv2.putText(img, strPredicted, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0))
+
+            print('Predicted Label: ',predictedLabel)
+            print('Confidence: ',confidence)
     
-    crop_img = cv2.cvtColor(crop_img,cv2.COLOR_BGR2GRAY)
+            cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2)
+            cv2.imshow("Image",img)
 
-    result = cv2.face.MinDistancePredictCollector()
-    fisher_faces.predict(crop_img,result,0)
-    predictedLabel = result.getLabel()
-    conf = result.getDist()
+#ch = cv2.waitKey(0)
 
-
-    if predictedLabel==1:
-      strPredicted = 'Male'
-    elif predictedLabel==2:
-      strPredicted = 'Female'
-    else:
-      strPredicted = 'Not Found'
-
-    print("{} identified with confidence {}".format(strPredicted, conf))
-
-    cv2.putText(img, strPredicted, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0))
-
-    print('Predicted Label: ',predictedLabel)
-    print('Confidence: ',confidence)
-    
-
-cv2.imshow("Image",img)
-
-ch = cv2.waitKey(0)
-
-cv2.destroyAllWindows()
+#cv2.destroyAllWindows()
