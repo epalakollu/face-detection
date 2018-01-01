@@ -39,6 +39,7 @@ minute = 0
 faceCounter = 0
 totalMaleFaces = 0
 totalFemaleFaces = 0
+prevMinute = datetime.now().minute
 
 
 #Enable and capture video feed
@@ -62,6 +63,10 @@ while(True):
   femaleFacesCount = 0
   maleFacesFoundinFrame = 0
   femaleFacesFoundinFrame = 0
+
+  if faceTime!=0 and (datetime.now().minute>prevMinute or (datetime.now().minute==0 and prevMinute==59)):
+   utils.recordStatistics(faceTime, round(runningFaceTime.total_seconds()), totalMaleFaces,totalFemaleFaces)
+   prevMinute = datetime.now().minute
 
 
   for (x, y, w, h) in faces:
@@ -92,7 +97,7 @@ while(True):
 
       #calculate and record face time in analytics file
       minuteFaceTime =  round(runningFaceTime.total_seconds())
-      utils.recordStatistics(faceTime, minuteFaceTime, totalMaleFaces,totalFemaleFaces)
+      #utils.recordStatistics(faceTime, minuteFaceTime, totalMaleFaces,totalFemaleFaces)
       runningFaceTime = datetime.now()-datetime.now()
 
 
@@ -144,8 +149,8 @@ while(True):
     total =  total + (newTime - faceTime)
     runningFaceTime = runningFaceTime + (newTime - faceTime)
 
-    if datetime.now().minute>minute:
-      utils.recordStatistics(faceTime, round(runningFaceTime.total_seconds()), totalMaleFaces,totalFemaleFaces)
+    #if datetime.now().minute>minute:
+      #utils.recordStatistics(faceTime, round(runningFaceTime.total_seconds()), totalMaleFaces,totalFemaleFaces)
 
     print('running counter',total)
   elif len(faces)>0:
