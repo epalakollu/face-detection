@@ -60,6 +60,8 @@ while(True):
 
   maleFacesCount = 0
   femaleFacesCount = 0
+  maleFacesFoundinFrame = 0
+  femaleFacesFoundinFrame = 0
 
 
   for (x, y, w, h) in faces:
@@ -116,8 +118,10 @@ while(True):
     #increment
     if predictedLabel==1:
       maleFacesCount +=1
+      maleFacesFoundinFrame = 1
     elif predictedLabel==2:
       femaleFacesCount +=1
+      femaleFacesFoundinFrame = 1
 
     #print('Predicted Label: {} Confidence: {}', gender_classifier.get(predictedLabel),conf)
    # print('Confidence: ',conf)
@@ -129,6 +133,9 @@ while(True):
   #enable LED lights on PI
   if utils.getEnvironmentValueByKey('ENVIRONMENT_TYPE')=='RASPBERRYPI':
     showPILights.showGenderLights(maleFacesCount,femaleFacesCount)
+
+  #stream data to display sources
+  utils.streamFacesData(maleFacesFoundinFrame,femaleFacesFoundinFrame)
 
   #if len(faces) < 1 and facesFound=='true' and round((datetime.now()-runningFaceTime).total_seconds())>0:
   if len(faces) < 1 and facesFound=='true':
@@ -148,6 +155,8 @@ while(True):
     if femaleFacesCount > totalFemaleFaces:
       totalFemaleFaces = femaleFacesCount
 
+
+
   cv2.imshow("Image",img)
 
   ch = cv2.waitKey(30)
@@ -158,7 +167,7 @@ while(True):
     #if len(faces) > 0 and facesFound=='true':
     if faceTime==0:
       faceTime = datetime.now()
-      
+
     total =  total + (endTime - faceTime)
     runningFaceTime = runningFaceTime + (endTime - faceTime)
     minuteFaceTime =  runningFaceTime.total_seconds()

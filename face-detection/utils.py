@@ -32,4 +32,16 @@ def recordStatistics(facetime, total, maleFacesCount,femaleFacesCount):
     socketIO.emit('statsdata',jsonData)
     print(jsonData)
 
+def streamFacesData(maleFaces,femaleFaces):
+
+  if maleFaces>0 or femaleFaces>0:
+    data = {}
+    data['maleFaces'] = str(maleFaces)
+    data['femaleFaces'] = str(femaleFaces)
+    jsonData = json.dumps(data)
+
+    with SocketIO('127.0.0.1', 8000, LoggingNamespace) as socketIO:
+      socketIO.emit('send faces data',jsonData)
+      print(jsonData)
+
 

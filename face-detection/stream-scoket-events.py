@@ -10,7 +10,7 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     """Serve the client-side application."""
-    return "Hi, EK"
+    return "App running and working hard to emit events."
 
 @sio.on('connect', namespace='/analytics')
 def connect(sid, environ):
@@ -18,16 +18,24 @@ def connect(sid, environ):
 
 
 def sendMessage(sid,data):
-    sio.emit('my response', data, namespace='/analytics')
-
+    sio.emit('face time stats', data, namespace='/analytics')
     print('message sent',data)
+
+
+
 
 
 @sio.on('statsdata')
 def statsdata(sid,data):
     print("Message: ", data)
-    #print("message ", data)
     sendMessage(sid,data)
+
+@sio.on('send faces data')
+def sendFacesData(sid,data):
+    print("Faces Data: ", data)
+    sio.emit('faces data', data, namespace='/analytics')    
+
+
 
 @sio.on('disconnect', namespace='/analytics')
 def disconnect(sid):
