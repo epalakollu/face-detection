@@ -9,8 +9,15 @@ dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
 
+
+
 def getEnvironmentValueByKey(KEY):
   return os.getenv(KEY)
+
+
+socketIO = SocketIO(getEnvironmentValueByKey('SOCKET_HOST_NAME'), getEnvironmentValueByKey('SOCKET_PORT'), LoggingNamespace)
+
+
 
 def recordStatistics(facetime, total, maleFacesCount,femaleFacesCount):
   statsFile = open("analytics.txt", "a")
@@ -28,9 +35,9 @@ def recordStatistics(facetime, total, maleFacesCount,femaleFacesCount):
   statsFile.write(string+'\n')
   statsFile.close()
   
-  with SocketIO('127.0.0.1', 8000, LoggingNamespace) as socketIO:
-    socketIO.emit('statsdata',jsonData)
-    print(jsonData)
+  #with SocketIO('127.0.0.1', 8000, LoggingNamespace) as socketIO:
+  socketIO.emit('statsdata',jsonData)
+  print(jsonData)
 
 def streamFacesData(maleFaces,femaleFaces):
 
@@ -40,8 +47,8 @@ def streamFacesData(maleFaces,femaleFaces):
     data['femaleFaces'] = str(femaleFaces)
     jsonData = json.dumps(data)
 
-    with SocketIO('127.0.0.1', 8000, LoggingNamespace) as socketIO:
-      socketIO.emit('send faces data',jsonData)
-      print(jsonData)
+    #with SocketIO('127.0.0.1', 8000, LoggingNamespace) as socketIO:
+    socketIO.emit('send faces data',jsonData)
+    print(jsonData)
 
 
