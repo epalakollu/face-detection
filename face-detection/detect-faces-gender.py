@@ -67,6 +67,8 @@ while(True):
   if faceTime!=0 and (datetime.now().minute>prevMinute or (datetime.now().minute==0 and prevMinute==59)):
    utils.recordStatistics(faceTime, round(runningFaceTime.total_seconds()), totalMaleFaces,totalFemaleFaces)
    prevMinute = datetime.now().minute
+   runningFaceTime = datetime.now()-datetime.now()
+
 
 
   for (x, y, w, h) in faces:
