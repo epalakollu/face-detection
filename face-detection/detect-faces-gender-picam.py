@@ -44,19 +44,20 @@ totalFemaleFaces = 0
 prevMinute = datetime.now().minute
 
 
-# initialize the camera and grab a reference to the raw camera capture
+# initialize the camera and capture raw stream
 camera = PiCamera()
 camera.resolution = (640, 480)
 camera.framerate = 32
+# Setting resoltion to 640 / 480
 rawCapture = PiRGBArray(camera, size=(640, 480))
  
 # allow the camera to warmup
 time.sleep(0.2)
  
-# capture frames from the camera
+# capturing frames from the camera and reset post processing of frame
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-  # grab the raw NumPy array representing the image, then initialize the timestamp
-  # and occupied/unoccupied text
+
+  #grab image form numpy array. Rest of the process is same as USB camera
   img = frame.array
 
   #img = cv2.resize(img, (0,0), fx=0.5,fy=0.5)
