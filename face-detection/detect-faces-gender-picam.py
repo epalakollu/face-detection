@@ -6,7 +6,7 @@ import os
 import utils as utils
 from picamera.array import PiRGBArray
 from picamera import PiCamera
-
+import time
 
 
 #Uncomment to enable lights on PI
@@ -60,7 +60,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
   img = frame.array
 
   #img = cv2.resize(img, (0,0), fx=0.5,fy=0.5)
-  img = cv2.resize(img, (640,360))
+  #img = cv2.resize(img, (640,480))
   gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
   #use opencv default haar cascde file for face detection
@@ -112,7 +112,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
       minuteFaceTime =  round(runningFaceTime.total_seconds())
       #utils.recordStatistics(faceTime, minuteFaceTime, totalMaleFaces,totalFemaleFaces)
       runningFaceTime = datetime.now()-datetime.now()
-
+	
 
 
     crop_img = img[y:y+h, x:x+w]
@@ -147,7 +147,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     cv2.putText(img, gender_classifier.get(predictedLabel), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0))
     cv2.imshow('cropeed',crop_img)
     cv2.imshow("Image",img)
-
+  rawCapture.truncate(0)
+	
   #enable LED lights on PI
   if utils.getEnvironmentValueByKey('ENVIRONMENT_TYPE')=='RASPBERRYPI':
     showPILights.showGenderLights(maleFacesCount,femaleFacesCount)
