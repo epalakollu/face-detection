@@ -48,5 +48,45 @@ class traindata:
 
         faceRecognizer = cv2.face.createLBPHFaceRecognizer()
         faceRecognizer.train(images,np.array(labels))
-        faceRecognizer.save("face_recognizer_gender.yml")
+        faceRecognizer.save("data/face_recognizer_gender.yml")
+
+    def trainDataForFacialRecognition():
+        imageNames = []
+        images = []
+        labels = []
+
+        imageNames.append('/Users/ekumar/EKProject/projects/facedetection/pi/face-detection/face-detection/images/face_recognition/img_1.jpg')
+        labels.append(1)
+
+        imageNames.append('/Users/ekumar/EKProject/projects/facedetection/pi/face-detection/face-detection/images/face_recognition/img_2.jpg')
+        labels.append(1)
+
+        imageNames.append('/Users/ekumar/EKProject/projects/facedetection/pi/face-detection/face-detection/images/face_recognition/img_3.jpg')
+        labels.append(1)
+
+        imageNames.append('/Users/ekumar/EKProject/projects/facedetection/pi/face-detection/face-detection/images/face_recognition/img_4.jpg')
+        labels.append(1)
+
+        imageNames.append('/Users/ekumar/EKProject/projects/facedetection/pi/face-detection/face-detection/images/face_recognition/nick.jpg')
+        labels.append(2)
+
+        imageNames.append('/Users/ekumar/EKProject/projects/facedetection/pi/face-detection/face-detection/images/face_recognition/uma_2.jpg')
+        labels.append(3)
+
+        for filename in imageNames:
+
+            if filename.__contains__('.') and image_formats.__contains__(filename.split('.')[1]):
+
+                print(filename)
+               
+                image=Image.open(filename).convert('L')
+                imageNp=np.array(image,'uint8')            
+                imageNp = cv2.resize(imageNp, (50,50))                  
+
+                images.append(imageNp)
+
+        faceRecognizer = cv2.face.createLBPHFaceRecognizer()
+        faceRecognizer.train(images,np.array(labels))
+        faceRecognizer.save("data/face_recognition_OB.yml")
+
 

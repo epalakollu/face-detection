@@ -4,6 +4,7 @@ from traindata import traindata
 from datetime import datetime
 import os
 import utils as utils
+import analytics as analytics
 
 
 
@@ -65,7 +66,7 @@ while(True):
   femaleFacesFoundinFrame = 0
 
   if faceTime!=0 and (datetime.now().minute>prevMinute or (datetime.now().minute==0 and prevMinute==59)):
-   utils.recordStatistics(faceTime, round(runningFaceTime.total_seconds()), totalMaleFaces,totalFemaleFaces)
+   analytics.recordStatistics(faceTime, round(runningFaceTime.total_seconds()), totalMaleFaces,totalFemaleFaces)
    prevMinute = datetime.now().minute
    runningFaceTime = datetime.now()-datetime.now()
 
@@ -142,7 +143,7 @@ while(True):
     showPILights.showGenderLights(maleFacesCount,femaleFacesCount)
 
   #stream data to display sources
-  utils.streamFacesData(maleFacesFoundinFrame,femaleFacesFoundinFrame)
+  analytics.streamFacesData(maleFacesFoundinFrame,femaleFacesFoundinFrame)
 
   #if len(faces) < 1 and facesFound=='true' and round((datetime.now()-runningFaceTime).total_seconds())>0:
   if len(faces) < 1 and facesFound=='true':
@@ -178,7 +179,7 @@ while(True):
     total =  total + (endTime - faceTime)
     runningFaceTime = runningFaceTime + (endTime - faceTime)
     minuteFaceTime =  runningFaceTime.total_seconds()
-    utils.recordStatistics(faceTime, round(runningFaceTime.total_seconds()), totalMaleFaces,totalFemaleFaces)    
+    analytics.recordStatistics(faceTime, round(runningFaceTime.total_seconds()), totalMaleFaces,totalFemaleFaces)    
     print('Total face time on camera: ',total)
     print('Total activity time: ', (endTime-startTime))
     break

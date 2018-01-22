@@ -7,6 +7,7 @@ import utils as utils
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import time
+import analytics
 
 
 #Uncomment to enable lights on PI
@@ -77,7 +78,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
   femaleFacesFoundinFrame = 0
 
   if faceTime!=0 and (datetime.now().minute>prevMinute or (datetime.now().minute==0 and prevMinute==59)):
-   utils.recordStatistics(faceTime, round(runningFaceTime.total_seconds()), totalMaleFaces,totalFemaleFaces)
+   analytics.recordStatistics(faceTime, round(runningFaceTime.total_seconds()), totalMaleFaces,totalFemaleFaces)
    prevMinute = datetime.now().minute
    runningFaceTime = datetime.now()-datetime.now()
 
@@ -155,7 +156,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     showPILights.showGenderLights(maleFacesCount,femaleFacesCount)
 
   #stream data to display sources
-  utils.streamFacesData(maleFacesFoundinFrame,femaleFacesFoundinFrame)
+  analytics.streamFacesData(maleFacesFoundinFrame,femaleFacesFoundinFrame)
 
   #if len(faces) < 1 and facesFound=='true' and round((datetime.now()-runningFaceTime).total_seconds())>0:
   if len(faces) < 1 and facesFound=='true':
@@ -191,7 +192,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     total =  total + (endTime - faceTime)
     runningFaceTime = runningFaceTime + (endTime - faceTime)
     minuteFaceTime =  runningFaceTime.total_seconds()
-    utils.recordStatistics(faceTime, round(runningFaceTime.total_seconds()), totalMaleFaces,totalFemaleFaces)    
+    analytics.recordStatistics(faceTime, round(runningFaceTime.total_seconds()), totalMaleFaces,totalFemaleFaces)    
     print('Total face time on camera: ',total)
     print('Total activity time: ', (endTime-startTime))
     break
