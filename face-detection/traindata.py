@@ -56,19 +56,19 @@ class traindata:
         labels = []
 
         imageNames.append('/Users/ekumar/EKProject/projects/facedetection/pi/face-detection/face-detection/images/face_recognition/img_1.jpg')
-        labels.append(1)
+        labels.append(2)
 
         imageNames.append('/Users/ekumar/EKProject/projects/facedetection/pi/face-detection/face-detection/images/face_recognition/img_2.jpg')
-        labels.append(1)
+        labels.append(2)
 
         imageNames.append('/Users/ekumar/EKProject/projects/facedetection/pi/face-detection/face-detection/images/face_recognition/img_3.jpg')
-        labels.append(1)
+        labels.append(2)
 
         imageNames.append('/Users/ekumar/EKProject/projects/facedetection/pi/face-detection/face-detection/images/face_recognition/img_4.jpg')
-        labels.append(1)
+        labels.append(2)
 
         imageNames.append('/Users/ekumar/EKProject/projects/facedetection/pi/face-detection/face-detection/images/face_recognition/nick.jpg')
-        labels.append(2)
+        labels.append(1)
 
         imageNames.append('/Users/ekumar/EKProject/projects/facedetection/pi/face-detection/face-detection/images/face_recognition/uma_2.jpg')
         labels.append(3)

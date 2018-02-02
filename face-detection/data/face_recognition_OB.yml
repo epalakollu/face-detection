@@ -7922,6 +7922,6 @@ labels: !!opencv-matrix
    rows: 6
    cols: 1
    dt: i
-   data: [ 1, 1, 1, 1, 2, 3 ]
+   data: [ 2, 2, 2, 2, 1, 3 ]
 labelsInfo:
    []
