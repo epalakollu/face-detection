@@ -4,3 +4,4 @@ __pycache__
 .DS_Store
 ../.DS_Store
 face_recognizer_gender.yml
+face-detection/curl.sh

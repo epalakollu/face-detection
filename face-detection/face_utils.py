@@ -3,6 +3,7 @@ import requests
 from io import BytesIO
 from PIL import Image, ImageDraw
 import cv2
+import numpy as np
 
 KEY = 'f464bbf19594453392415e3e288dacfb'  # Replace with a valid subscription key (keeping the quotes in place).
 CF.Key.set(KEY)
@@ -24,3 +25,21 @@ def recognizeFaces(personId1, personId2):
 
     result = CF.face.verify(personId1,personId2)
     return result
+
+def createFacelist(listName):
+    response = CF.face_list.create(listName)
+    print(response)
+
+def addFaceToList(listName,face):
+    img_str = cv2.imencode('.jpg', np.array(face))[1].tostring()
+    response = CF.face_list.add_face(img_str,listName)
+    print(response) 
+
+def getFaceListDetails(listName):
+    response = CF.face_list.get(listName)
+    print(response)
+
+
+
+
+
